@@ -1,5 +1,7 @@
 package subClasses;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -36,9 +38,9 @@ public class JSONhandler {
 	 * This constructor creates a new instance of this class and adds the given property to the 
 	 * newly created json
 	 */
-	public JSONhandler( String field, String data  ){
+	public JSONhandler( String data  ){
 		this.instance = new JsonObject();
-		this.instance.addProperty(field, data);
+		this.instance.addProperty("", data);
 	}
 
 	/**
@@ -62,6 +64,11 @@ public class JSONhandler {
 		return "nothing";
 	}
 	
+	public ArrayList<String> toArray(String member){
+		String list[] = this.instance.get(member).toString().split(",");
+		ArrayList<String> array = new ArrayList<String>( Arrays.asList(list));
+		return array;
+	}
 	
 }
 
