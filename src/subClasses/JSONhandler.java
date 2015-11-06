@@ -2,9 +2,6 @@ package subClasses;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-
 import com.google.gson.*;
 
 
@@ -57,7 +54,6 @@ public class JSONhandler {
 	}
 	
 	public String toString( String datafield ){
-		
 		if( this.instance.has(datafield) ){
 			return this.instance.get(datafield).toString();
 		}
