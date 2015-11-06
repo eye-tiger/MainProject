@@ -16,7 +16,7 @@ import com.google.gson.*;
  */
 public class JSONhandler {
 
-	private JsonObject instance;
+	public JsonObject instance;
 	
 	/**
 	 * This constructor creates an instance of the JSONhandler class using an instance of
@@ -28,6 +28,10 @@ public class JSONhandler {
 		this.instance = data;
 	}
 	
+	public JSONhandler( JSONhandler data ){
+		this.instance = data.instance;
+	}
+	
 	/**
 	 * @param field - the name of the attribute of the data to be added in the json data
 	 * @param data  - the data to be written to the json data
@@ -35,9 +39,10 @@ public class JSONhandler {
 	 * This constructor creates a new instance of this class and adds the given property to the 
 	 * newly created json
 	 */
-	public JSONhandler( String data  ){
+	public JSONhandler( ArrayList<String> data, String field  ){
 		this.instance = new JsonObject();
-		this.instance.addProperty("", data);
+		String fin = toString(data);
+		this.instance.addProperty(field, fin);
 	}
 
 	/**
@@ -50,20 +55,51 @@ public class JSONhandler {
 		this.instance.addProperty(field, newdata);
 	}
 	
-	public void addData( JSONhandler data ){	
+	public void addData( String field, ArrayList<String> newdata  ){	
+		this.instance.addProperty(field, toString(newdata) );
 	}
 	
 	public String toString( String datafield ){
 		if( this.instance.has(datafield) ){
-			return this.instance.get(datafield).toString();
+			return this.instance.get(datafield).getAsString().toString();
 		}
 		return "nothing";
 	}
+	
+	/**
+	 * @param data
+	 * @return
+	 */
+	private String toString( ArrayList<String> data ){
+		String fin = "";
+		for( String i: data){
+			fin = fin + "," + i;
+		}
+		fin = fin.substring(1, fin.length() );
+		return fin;
+	}
+	
 	
 	public ArrayList<String> toArray(String member){
 		String list[] = this.instance.get(member).toString().split(",");
 		ArrayList<String> array = new ArrayList<String>( Arrays.asList(list));
 		return array;
+	}
+	
+	
+	
+	
+	
+	public static void main( String args []){
+		ArrayList<String> check = new ArrayList<String>();
+		check.add("eng");
+		check.add("bio");
+		check.add("math");
+		JsonObject t = new JsonObject();
+		JSONhandler test = new JSONhandler(check, "hello");
+		test.addData("hello2", "testing");
+		
+		System.out.println( test.toString("hello") );
 	}
 	
 }
