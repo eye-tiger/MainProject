@@ -109,7 +109,7 @@ public class DBpull {
 	 * 
 	 * Gets the student's current data and returns it as a Hashmap
 	 */
-	protected Map<String, String> getCurrentStudentInfo(){
+	protected Map<String, String> getDynamicStudentInfo(){
 		HashMap<String, String> studentInfo = new HashMap<String, String>();
 		
 		//Obtains the necessary data and puts it into the map

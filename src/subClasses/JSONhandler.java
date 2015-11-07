@@ -86,21 +86,5 @@ public class JSONhandler {
 		return array;
 	}
 	
-	
-	
-	
-	
-	public static void main( String args []){
-		ArrayList<String> check = new ArrayList<String>();
-		check.add("eng");
-		check.add("bio");
-		check.add("math");
-		JsonObject t = new JsonObject();
-		JSONhandler test = new JSONhandler(check, "hello");
-		test.addData("hello2", "testing");
-		
-		System.out.println( test.toString("hello") );
-	}
-	
 }
 
