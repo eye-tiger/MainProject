@@ -10,7 +10,7 @@ import java.util.*;
 
 
 /**
- * @author jay
+ * @author jason
  *
  *This class provides all the necessary operations to read from the DB given using a student's id 
  *and course. Always create different instances of this class for different students. One instance can only
@@ -137,8 +137,11 @@ public class DBpull {
 		String pass = System.getenv("password");
     	CloudantClient client = new CloudantClient(account, account, pass);
     	DBpull test = new DBpull( client, "12345" );
-    	String get = test.getClassInfo("chem101").get("class_location");    	
-    	System.out.println(get);
+    	
+    	ArrayList<String> fa = test.getStudentTimetable();
+    	
+    	for( String a: fa)
+    		System.out.println(a);
 	}
 	
 	

@@ -5,6 +5,13 @@ import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
 import subClasses.JSONhandler;
 
+/**
+ * @author jason
+ *
+ *This class provides all the necessary write operations to the Database. One instance can only update one student's information
+ *This class must be used in conjunction with the DBpull class. Specifically, it uses the data returned from the getDynamic_info
+ *and the getStatic_info of the DBpull to update a given student's data
+ */
 public class DBpush {
 	
 	private Database db_static;		//This database connection connects to the student database that contains name, timetable, etc

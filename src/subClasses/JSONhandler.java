@@ -12,11 +12,11 @@ import com.google.gson.*;
  * ensure that it's in the proper format. It is used by the DBpull
  * and DBpush class
  * 
- * Still in development
+ * 
  */
 public class JSONhandler {
 
-	public JsonObject instance;
+	public JsonObject instance; 
 	
 	/**
 	 * This constructor creates an instance of the JSONhandler class using an instance of
@@ -55,10 +55,20 @@ public class JSONhandler {
 		this.instance.addProperty(field, newdata);
 	}
 	
+	/**
+	 * @param field  - The field name to be given to the arraylist data
+	 * @param newdata - Arraylist to be added to the json data
+	 * 
+	 * Adds the strings in the arraylist to the json data with the given field name
+	 */
 	public void addData( String field, ArrayList<String> newdata  ){	
 		this.instance.addProperty(field, toString(newdata) );
 	}
 	
+	/**
+	 * @param datafield - the json attribute to find and convert to a string
+	 * @return - String representation of the value with the given json attribute field
+	 */
 	public String toString( String datafield ){
 		if( this.instance.has(datafield) ){
 			return this.instance.get(datafield).getAsString().toString();
@@ -67,8 +77,28 @@ public class JSONhandler {
 	}
 	
 	/**
-	 * @param data
-	 * @return
+	 * @param datafield - the json attribute that has it's value stored as a list delimited by commas
+	 * @return - an arraylist containing the elements in  a json field 
+	 * 
+	 * 
+	 */
+	public ArrayList<String> toArray(String datafield){
+		
+		ArrayList<String> abcd = new ArrayList<String>();
+		
+		if( this.instance.has(datafield) ){
+			String a = this.instance.get(datafield).getAsString().toString();
+			String c[] = a.split(",");
+			
+			for( String f: c){	abcd.add(f); }
+		}
+		
+		return abcd;
+	}
+	
+	/**
+	 * @param data - An arraylist
+	 * @return - A string that contains the items in the arraylist as a comma delimited list
 	 */
 	private String toString( ArrayList<String> data ){
 		String fin = "";
@@ -77,13 +107,6 @@ public class JSONhandler {
 		}
 		fin = fin.substring(1, fin.length() );
 		return fin;
-	}
-	
-	
-	public ArrayList<String> toArray(String member){
-		String list[] = this.instance.get(member).toString().split(",");
-		ArrayList<String> array = new ArrayList<String>( Arrays.asList(list));
-		return array;
 	}
 	
 }
