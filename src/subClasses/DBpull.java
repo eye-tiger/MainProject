@@ -120,6 +120,10 @@ public class DBpull {
 		return studentInfo;
 	}
 	
+	protected ArrayList<String> getDailyAttendance(){
+		return this.dynamic_info.toArray("user_daily_attendance");
+	}
+	
 	//Getters and Setters methods
 	protected JSONhandler getStatic_info() {
 		return static_info;

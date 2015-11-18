@@ -80,14 +80,18 @@ public class DBpush {
 	/**
 	 * @param lates - the total number of times a student has been late 
 	 */
-	public void updateTotalLates(int lates){
-		this.static_info.addData("user_number_lates", "" + lates + "");
+	public void updateTotalLates(){
+		int late = Integer.parseInt(this.static_info.toString("user_number_lates"));
+		late++;
+		this.static_info.addData("user_number_lates", "" + late + "");
 	}
 	
 	/**
 	 * @param absents - the total number of times a student has been absent
 	 */
-	public void updateTotalAbsences(int absents){
+	public void updateTotalAbsences(){
+		int absents = Integer.parseInt(this.static_info.toString("user_number_late"));
+		absents++;
 		this.static_info.addData("number_of_attendances", ""+absents+"");
 	}
 	
@@ -102,39 +106,5 @@ public class DBpush {
 		this.db_dynamic.update(this.dynamic_info.instance);
 		this.db_static.update(this.static_info.instance);
 	}
-	
-	//tester for both dbpull and dbpush class
-	//
-	public static void main( String args[] ){
-		String account = System.getenv("account");
-		String pass = System.getenv("password");
-    	CloudantClient client = new CloudantClient(account, account, pass);
-    	
-    	DBpull test = new DBpull( client, "12345" );
-    	
-    	//gets and prints end time for chem101
-    	String get = test.getClassInfo("chem101").get("class_time_end");
-    	System.out.println(get);
-
-    	
-    	//updates student's attendance
-    	ArrayList<String> update = new ArrayList<String>();     	
-    	update.add("present");
-    	update.add("present");
-    	update.add("absent");
-    	
-    	//updates the databases
-    	DBpush te = new DBpush( client, test.getDynamic_info(), test.getStatic_info() );
-    	te.updateDailyAttendance(update );
-    	te.updateCurrentClass("chem101");
-    	te.updateLocation("room3430");
-    	te.updateStatus("vacation");
-    	te.updateTotalLates(5);
-    	te.updateTotalAbsences(20);
-    	
-    	te.commitChanges();		//commits changes
-    	
-	}
-	
-	
+		
 }
