@@ -98,7 +98,7 @@ public class DBpull {
 		studentInfo.put("user_first_name", this.static_info.toString("user_first_name") );
 		studentInfo.put("user_last_name", this.static_info.toString("user_last_name") );
 		studentInfo.put("user_number_lates", this.static_info.toString("user_number_lates") );
-		studentInfo.put("number_of_attendances", this.static_info.toString("number_of_attendances") );
+		studentInfo.put("user_number_of_absences", this.static_info.toString("user_number_of_absences") );
 		return studentInfo;
 	}
 	
@@ -132,21 +132,5 @@ public class DBpull {
 	protected JSONhandler getDynamic_info() {
 		return dynamic_info;
 	}
-	
-	
-	//Tester
-	public static void main( String [] args){	
-		//Set environment variables
-		String account = System.getenv("account");
-		String pass = System.getenv("password");
-    	CloudantClient client = new CloudantClient(account, account, pass);
-    	DBpull test = new DBpull( client, "12345" );
-    	
-    	ArrayList<String> fa = test.getStudentTimetable();
-    	
-    	for( String a: fa)
-    		System.out.println(a);
-	}
-	
-	
+
 }

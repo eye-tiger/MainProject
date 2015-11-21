@@ -11,8 +11,6 @@ public class Facade {
 
 	private CloudantClient client;
 	private DBpull student;
-	private String id;
-	
 	/**
 	 * @param id - Student id
 	 * 
@@ -20,7 +18,7 @@ public class Facade {
 	 */
 	public Facade(String id){
 		String account = "eyeofthetiger";//System.getenv("account");
-		String pass = "eng40000";//;System.getenv("password");
+		String pass = "eng40000";System.getenv("password");
     	this.client = new CloudantClient(account, account, pass);
     	this.student = new DBpull(this.client, id);
 	}
@@ -57,13 +55,13 @@ public class Facade {
 		ArrayList<String> attend = this.student.getDailyAttendance();
 		
 		Calendar time = Calendar.getInstance();
-		int hour = time.get(Calendar.HOUR_OF_DAY);
+		//int hour = time.get(Calendar.HOUR_OF_DAY);
 		int minute = time.get(Calendar.MINUTE);
 		
 		if( minute%20 > 5 && minute%20 <= 10 ){
 			attend.add("present");
 		}
-		else if( minute%20 > 10 ){
+		else {
 			attend.add("late");
 			update.updateTotalLates();
 		}
@@ -73,13 +71,5 @@ public class Facade {
 
 		update.commitChanges();
 		
-	}
-	
-	
-	public static void main(String args[]){
-		
-		Facade test = new Facade("12345");
-		test.getTimetable();
-		test.updateStudentInstance("4321", "biology");
 	}
 }

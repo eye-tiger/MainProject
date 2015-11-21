@@ -90,9 +90,9 @@ public class DBpush {
 	 * @param absents - the total number of times a student has been absent
 	 */
 	public void updateTotalAbsences(){
-		int absents = Integer.parseInt(this.static_info.toString("user_number_late"));
+		int absents = Integer.parseInt(this.static_info.toString("user_number_of_absences"));
 		absents++;
-		this.static_info.addData("number_of_attendances", ""+absents+"");
+		this.static_info.addData("user_number_of_absences", ""+absents+"");
 	}
 	
 	/**
