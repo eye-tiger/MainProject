@@ -1,6 +1,7 @@
 package subClasses;
 
 import java.util.ArrayList;
+
 import com.google.gson.*;
 
 
@@ -78,8 +79,6 @@ public class JSONhandler {
 	/**
 	 * @param datafield - the json attribute that has it's value stored as a list delimited by commas
 	 * @return - an arraylist containing the elements in  a json field 
-	 * 
-	 * 
 	 */
 	public ArrayList<String> toArray(String datafield){
 		
@@ -96,15 +95,44 @@ public class JSONhandler {
 	}
 	
 	/**
+	 * @param array - the json field that contains the array
+	 * @param field - the json field that is in each array element to be extracted
+	 * @return - An arraylist of strings containing all the field values in the array
+	 */
+	public ArrayList<String> extractFromArray( String array, String field){
+		if( this.instance.getAsJsonArray(array).isJsonArray()){
+			
+			JsonArray temp = this.instance.getAsJsonArray(array);
+			ArrayList<String> re = new ArrayList<String>();
+			
+			for(int i = 0; i < temp.size(); i++){
+				re.add(temp.get(i).getAsJsonObject().get(field).getAsString());
+			}
+			return re;
+		}
+		return new ArrayList<String>();
+	}
+	
+	/**
 	 * @param data - An arraylist
 	 * @return - A string that contains the items in the arraylist as a comma delimited list
 	 */
 	private String toString( ArrayList<String> data ){
 		String fin = "";
-		for( String i: data){
-			fin = fin + "," + i;
+		
+		for( int i = 0; i < data.size(); i++){
+			if( data.get(i) == ""){
+				continue;
+			}
+			else{
+				if( fin.isEmpty() ){
+					fin = data.get(i);
+				}
+				else{
+					fin = fin + "," + data.get(i);
+				}
+			}
 		}
-		fin = fin.substring(1, fin.length() );
 		return fin;
 	}
 	

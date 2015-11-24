@@ -97,7 +97,7 @@ public class DBpull {
 		//Obtains the necessary data and puts it into the map
 		studentInfo.put("user_first_name", this.static_info.toString("user_first_name") );
 		studentInfo.put("user_last_name", this.static_info.toString("user_last_name") );
-		studentInfo.put("user_number_lates", this.static_info.toString("user_number_lates") );
+		studentInfo.put("user_number_lates", this.static_info.toString("user_number_of_lates") );
 		studentInfo.put("user_number_of_absences", this.static_info.toString("user_number_of_absences") );
 		return studentInfo;
 	}

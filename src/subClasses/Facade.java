@@ -18,7 +18,7 @@ public class Facade {
 	 */
 	public Facade(String id){
 		String account = "eyeofthetiger";//System.getenv("account");
-		String pass = "eng40000";System.getenv("password");
+		String pass = "eng40000";//System.getenv("password");
     	this.client = new CloudantClient(account, account, pass);
     	this.student = new DBpull(this.client, id);
 	}
@@ -71,5 +71,11 @@ public class Facade {
 
 		update.commitChanges();
 		
+	}
+	
+	public static void main( String args[]){
+		Facade test = new Facade("clarkkent");
+		
+		test.updateStudentInstance("pse321", "bio");
 	}
 }

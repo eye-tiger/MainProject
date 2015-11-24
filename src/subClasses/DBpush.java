@@ -81,9 +81,9 @@ public class DBpush {
 	 * @param lates - the total number of times a student has been late 
 	 */
 	public void updateTotalLates(){
-		int late = Integer.parseInt(this.static_info.toString("user_number_lates"));
+		int late = Integer.parseInt(this.static_info.toString("user_number_of_lates"));
 		late++;
-		this.static_info.addData("user_number_lates", "" + late + "");
+		this.static_info.addData("user_number_of_lates", "" + late + "");
 	}
 	
 	/**
