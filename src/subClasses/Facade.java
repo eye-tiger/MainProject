@@ -59,10 +59,12 @@ public class Facade {
 		int minute = time.get(Calendar.MINUTE);
 		
 		if( minute%20 > 5 && minute%20 <= 10 ){
-			attend.add("present");
+			//attend.add("present");
+			update.updateStatus("present");
 		}
 		else {
-			attend.add("late");
+			//attend.add("late");
+			update.updateStatus("late");
 			update.updateTotalLates();
 		}
 		update.updateLocation(classID);
@@ -74,7 +76,7 @@ public class Facade {
 	}
 	
 	public static void main( String args[]){
-		Facade test = new Facade("clarkkent");
+		Facade test = new Facade("JasonKuffour");
 		
 		test.updateStudentInstance("pse321", "bio");
 	}
