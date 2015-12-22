@@ -15,7 +15,6 @@ import java.util.*;
  *This class provides all the necessary operations to read from the DB given using a student's id 
  *and course. Always create different instances of this class for different students. One instance can only
  *be used to access one student information only
- *
  */
 public class DBpull {
 	
@@ -23,42 +22,45 @@ public class DBpull {
 	private Database db_dynamic;	//This db connection connects to the student db with current location, current class etc	
 	private Database db_class;		//This db connection connects to the db containing all the class start, end times and locations
 	
-	//Defines the names of the 3 databases to connect to 
-	private String dbStatic  = "static_user_info";	
-	private String dbDynamic = "dynamic_user_info";
-	private String dbClass   = "class_info";	
 	
 	private JSONhandler static_info;		//Stores all the static info of the student which will be updated to send back to the db
 	private JSONhandler dynamic_info;    //Stores the all of the dynamic info of the student which will be updated to send back to the db
 	
-	private String studentId;	//Stores the student id
-	
+	private String studentId;
 	
 	/**
-	 * @param client - The cloudant account to connect to 
-	 * 
-	 * The constructor initializes all db connections
+	 * @param stat - database instance for the static_user_info
+	 * @param dyna - database instance for the dynamic_user_info
+	 * @param cla - database instance for the class_info
+	 * @param studentId - unique student id
+	 * The constructor initializes all db connections and gets all db info for a student
 	 */
-	protected DBpull( CloudantClient client, String studentId ){
-		this.studentId = studentId;
-		
+	protected DBpull( String studentId, Database stat, Database dyna, Database cla ){
 		//connects to the 3 databases to be used
-		this.db_static  = client.database(dbStatic , false);
-		this.db_dynamic = client.database(dbDynamic, false);
-		this.db_class   = client.database(dbClass  , false);
+		this.db_static  = stat;
+		this.db_dynamic = dyna;
+		this.db_class   = cla;
+		this.studentId = studentId;
+	
+		//creates two threads to get the student's dynamic and static info
+		MultiPull stati = new MultiPull("static");
+		MultiPull dynam = new MultiPull("dynamic");
 		
-		JSONhandler responseS = new JSONhandler(  this.db_static.find(JsonObject.class, this.studentId) );	
-		this.static_info = responseS;
+		//starts the threads
+		stati.start();
+		dynam.start();
 		
-		JSONhandler responseD = new JSONhandler(  this.db_dynamic.find(JsonObject.class, this.studentId) );
-		this.dynamic_info = responseD;
+		try{
+			//Waits for the two threads to finish getting the data before continuing
+			stati.join();
+			dynam.join();
+		}
+		catch( Exception e){ e.printStackTrace(); }
 	}
 
 	/**
-	 * 
 	 * @return An arraylist containing the student's timetable in order of 
-	 *         occurence
-	 *         
+	 *         occurence      
 	 * Searches for the timetable of the student with the id id
 	 */
 	protected ArrayList<String> getStudentTimetable(){
@@ -68,7 +70,6 @@ public class DBpull {
 	/**
 	 * @param course - The course id
 	 * @return A Hashmap containing the course's start time, end time and classroom location
-	 * 
 	 * Returns the class information such as start time, end time and location of the given course id
 	 */
 	protected Map<String, String> getClassInfo( String course){
@@ -85,10 +86,8 @@ public class DBpull {
 	}
 	
 	/**
-	 * 
 	 * @return a HashMap containing the student's first name, last name, number of times they have been late
 	 *         and absent
-	 *         
 	 * Searches the student DB to get the student's information and returns it in a hashmap
 	 */
 	protected Map<String, String> getStudentInfo(){
@@ -103,10 +102,8 @@ public class DBpull {
 	}
 	
 	/**
-	 *
 	 * @returns a HashMap containing the student's status, current location, current class
 	 * 			and their attendance record for the day
-	 * 
 	 * Gets the student's current data and returns it as a Hashmap
 	 */
 	protected Map<String, String> getDynamicStudentInfo(){
@@ -124,13 +121,62 @@ public class DBpull {
 		return this.dynamic_info.toArray("user_daily_attendance");
 	}
 	
-	//Getters and Setters methods
+	//Getter method for setting static info
 	protected JSONhandler getStatic_info() {
 		return static_info;
 	}
+	
+	//Setter method for setting static info
+	protected void setStatic_info(JSONhandler info){
+		this.static_info = info;
+	}
 
+	//Getter method for setting dynamic info
 	protected JSONhandler getDynamic_info() {
 		return dynamic_info;
 	}
-
+	
+	//Setter method for setting dynamic info
+	protected void setDynamic_info(JSONhandler info){
+		this.dynamic_info = info;
+	}
+	
+   //this class is responsible for the threads
+   private class MultiPull extends Thread{
+		private String dbtype; //stores the db from which to obtain the info
+		
+		MultiPull(String dbtype){
+			this.dbtype = dbtype;
+		}
+		
+		public void run( ){
+					
+			JSONhandler sync;
+			
+			if( this.dbtype == "static"){
+				sync = new JSONhandler(  db_static.find(JsonObject.class, studentId) ); //gets student info from static db
+				static_info = sync;
+			}
+			else{
+				sync = new JSONhandler(  db_dynamic.find(JsonObject.class, studentId) ); //gets student info from dynamic db
+				dynamic_info = sync;
+			}
+			return;
+		}
+   }
+   
+   
+	public static void main(String args[]){
+		
+		String account = System.getenv("account");
+		String pass = System.getenv("password");
+    	CloudantClient client = new CloudantClient(account, account, pass);
+    	Database stat = client.database("static_user_info", false);
+    	Database dynamic = client.database("dynamic_user_info", false);
+    	Database classs = client.database("class_info", false);
+    	
+    	DBpull student = new DBpull("BruceWayne", stat, dynamic, classs);
+    	
+    	System.out.println(student.getDynamicStudentInfo().get("user_status") );
+	}
 }

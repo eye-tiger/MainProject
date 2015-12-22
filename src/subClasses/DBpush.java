@@ -1,6 +1,7 @@
 package subClasses;
 
 import java.util.ArrayList;
+
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
 import subClasses.JSONhandler;
@@ -16,12 +17,6 @@ public class DBpush {
 	
 	private Database db_static;		//This database connection connects to the student database that contains name, timetable, etc
 	private Database db_dynamic;	//This db connection connects to the student db with current location, current class etc	
-	//private Database db_class;		//This db connection connects to the db containing all the class start, end times and locations
-	
-	//Defines the names of the 3 databases to connect to 
-	private String dbStatic  = "static_user_info";	
-	private String dbDynamic = "dynamic_user_info";
-	//private String dbClass   = "class_info";	
 	
 	private JSONhandler static_info;		//Stores all the static info of the student which will be updated to send back to the db
 	private JSONhandler dynamic_info;    //Stores the all of the dynamic info of the student which will be updated to send back to the db
@@ -31,14 +26,12 @@ public class DBpush {
 	 * @param dynamic - the dynamic data pulled from the DB by the DBpull class. It is obtained using the getDynamic_info method
 	 * 					of the DBpull class
 	 * @param static - The static data pulled from the DB. Similiar method to obtain it from the DBpull class using a getter method
-	 * 
 	 * The constructor initializes all db connections with the data provided by the DBpull class
 	 */
-	public DBpush( CloudantClient client, JSONhandler dynamic, JSONhandler stat ){
+	public DBpush( Database dynm, Database sta, JSONhandler dynamic, JSONhandler stat ){
 		//connects to the 3 databases to be used
-		this.db_static  = client.database(dbStatic , false);
-		this.db_dynamic = client.database(dbDynamic, false);
-		//this.db_class   = client.database(dbClass  , false);
+		this.db_static  = sta;
+		this.db_dynamic = dynm;
 		
 		this.static_info = new JSONhandler(stat);		//sets the static data
 		this.dynamic_info = new JSONhandler(dynamic);	//sets the dynamic data
@@ -54,7 +47,6 @@ public class DBpush {
 	
 	/**
 	 * @param course - The class the student currently has
-	 * 
 	 * Updates the current student's current class 
 	 */
 	public void updateCurrentClass(String course){
@@ -63,7 +55,6 @@ public class DBpush {
 	
 	/**
 	 * @param update - The current classroom location of the student
-	 * 
 	 * updates the students last registered location
 	 */
 	public void updateLocation(String update){
@@ -103,8 +94,61 @@ public class DBpush {
 	 * This method SHOULD only be called once for any given instance of DBpush
 	 */
 	public void commitChanges(){
-		this.db_dynamic.update(this.dynamic_info.instance);
-		this.db_static.update(this.static_info.instance);
-	}
 		
+		//Creates two threads to update both the dynamic and static db at the same time
+		MultiPush stat = new MultiPush("static");
+		MultiPush dyna = new MultiPush("dynamic");
+		
+		//starts the two threads and hence update process
+		stat.start();
+		dyna.start();
+		
+		try{
+			//waits for the two threads to end
+			stat.join();
+			dyna.join();
+		}
+		catch(Exception e){	System.out.println("Problem!!!!!!!!!!!!!!!!");	}
+	}
+	
+	//this class is responsible for the threads
+	private class MultiPush extends Thread{
+		private String dbtype;	//stores the type of db to update
+		
+		MultiPush(String dbtype){
+			this.dbtype = dbtype;
+		}
+		
+		public void run(){
+			if( this.dbtype == "static"){
+				db_static.update(static_info.instance);
+			}
+			else{
+				db_dynamic.update(dynamic_info.instance);
+			}
+			return;
+		}
+	}
+	
+	
+	
+	public static void main(String args[]){
+		String account = System.getenv("account");
+		String pass = System.getenv("password");
+    	CloudantClient client = new CloudantClient(account, account, pass);
+    	Database stat = client.database("static_user_info", false);
+    	Database dynamic = client.database("dynamic_user_info", false);
+    	Database classs = client.database("class_info", false);
+    	
+    	DBpull student = new DBpull("BruceWayne", stat, dynamic, classs);
+    	
+    	System.out.println(student.getStudentTimetable().get(0) );
+    	
+    	DBpush stu = new DBpush(dynamic, stat, student.getDynamic_info(), student.getStatic_info() );
+    	stu.updateLocation("hello");
+    	stu.updateTotalAbsences();
+    	stu.updateStatus("present");
+    	stu.commitChanges();
+	}	
+	
 }

@@ -5,11 +5,15 @@ import java.util.Calendar;
 import java.util.Map;
 
 import com.cloudant.client.api.CloudantClient;
+import com.cloudant.client.api.Database;
 
 //main class to use
 public class Facade {
 
 	private CloudantClient client;
+	private Database db_static;		
+	private Database db_dynamic;	
+	private Database db_class;
 	private DBpull student;
 	/**
 	 * @param id - Student id
@@ -20,12 +24,16 @@ public class Facade {
 		String account = System.getenv("account");
 		String pass = System.getenv("password");
     	this.client = new CloudantClient(account, account, pass);
-    	this.student = new DBpull(this.client, id);
+    	
+    	this.db_static = client.database("static_user_info", false);
+    	this.db_dynamic = client.database("dynamic_user_info", false);
+    	this.db_class = client.database("class_info", false);
+    	
+    	this.student = new DBpull(id, this.db_static, this.db_dynamic, this.db_class);
 	}
 	
 	/**
 	 * @return - Student's first name
-	 * 
 	 */
 	public String getFirstName(){
 		Map<String, String> info = this.student.getStudentInfo();		
@@ -50,7 +58,7 @@ public class Facade {
 	
 
 	public void updateStudentInstance( String classID, String course) {
-		DBpush update = new DBpush(this.client, this.student.getDynamic_info(), this.student.getStatic_info());
+		DBpush update = new DBpush(this.db_dynamic, this.db_static, this.student.getDynamic_info(), this.student.getStatic_info());
 	
 		ArrayList<String> attend = this.student.getDailyAttendance();
 		
@@ -72,12 +80,10 @@ public class Facade {
 		update.updateCurrentClass(course);
 
 		update.commitChanges();
-		
 	}
 	
 	public static void main( String args[]){
-		Facade test = new Facade("JasonKuffour");
-		
+		Facade test = new Facade("BruceWayne");
 		test.updateStudentInstance("pse321", "bio");
 	}
 }

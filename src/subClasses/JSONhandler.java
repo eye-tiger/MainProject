@@ -11,8 +11,6 @@ import com.google.gson.*;
  * This class handles all data obtained and supplied to the DB to 
  * ensure that it's in the proper format. It is used by the DBpull
  * and DBpush class
- * 
- * 
  */
 public class JSONhandler {
 
@@ -21,7 +19,6 @@ public class JSONhandler {
 	/**
 	 * This constructor creates an instance of the JSONhandler class using an instance of
 	 * a JsonObject
-	 * 
 	 * @param data - A JsonObject containing information
 	 */
 	public JSONhandler( JsonObject data ){
@@ -35,7 +32,6 @@ public class JSONhandler {
 	/**
 	 * @param field - the name of the attribute of the data to be added in the json data
 	 * @param data  - the data to be written to the json data
-	 * 
 	 * This constructor creates a new instance of this class and adds the given property to the 
 	 * newly created json
 	 */
@@ -48,7 +44,6 @@ public class JSONhandler {
 	/**
 	 * @param field   - the name of the attribute field to be added/updated
 	 * @param newdata - the new value of the data to be added to the json data
-	 * 
 	 * This method adds/updates data in the json data with the given parameters
 	 */
 	public void addData( String field, String newdata ){
@@ -58,7 +53,6 @@ public class JSONhandler {
 	/**
 	 * @param field  - The field name to be given to the arraylist data
 	 * @param newdata - Arraylist to be added to the json data
-	 * 
 	 * Adds the strings in the arraylist to the json data with the given field name
 	 */
 	public void addData( String field, ArrayList<String> newdata  ){	
