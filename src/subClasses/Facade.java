@@ -60,7 +60,8 @@ public class Facade {
 	public void updateStudentInstance( String classID, String course) {
 		DBpush update = new DBpush(this.db_dynamic, this.db_static, this.student.getDynamic_info(), this.student.getStatic_info());
 	
-		ArrayList<String> attend = this.student.getDailyAttendance();
+		ArrayList<String> timetable = this.student.getStudentTimetable();
+		
 		
 		Calendar time = Calendar.getInstance();
 		//int hour = time.get(Calendar.HOUR_OF_DAY);
@@ -76,10 +77,19 @@ public class Facade {
 			update.updateTotalLates();
 		}
 		update.updateLocation(classID);
-		update.updateDailyAttendance(attend);
 		update.updateCurrentClass(course);
 
 		update.commitChanges();
+	}
+	
+	private int period(){
+	
+		Calendar time = Calendar.getInstance();
+		int hour = time.get(Calendar.HOUR_OF_DAY);
+		int minute = time.get(Calendar.MINUTE);
+		
+		
+		return 1;
 	}
 	
 	public static void main( String args[]){

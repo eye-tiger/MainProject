@@ -62,7 +62,7 @@ public class DBpush {
 	}
 	
 	/**
-	 * @param status - the status of the current student. For example sick, vacation etc
+	 * @param status - the status of the current student i.e whether they are late, absent or present
 	 */
 	public void updateStatus(String status){
 		this.dynamic_info.addData("user_status", status);
