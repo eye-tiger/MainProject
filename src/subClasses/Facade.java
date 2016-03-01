@@ -88,7 +88,6 @@ public class Facade {
 		int hour = time.get(Calendar.HOUR_OF_DAY);
 		int minute = time.get(Calendar.MINUTE);
 		
-		
 		return 1;
 	}
 	

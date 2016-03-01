@@ -8,7 +8,7 @@ public class Config {
 	private JSONhandler data;
 	
 	public Config(Database admin){
-		
+		this.config = admin;
 	}
 	
 	public String startTime(){
