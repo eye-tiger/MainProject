@@ -2,10 +2,8 @@ package subClasses;
 
 import subClasses.JSONhandler;
 
-import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
 import com.google.gson.JsonObject;
-
 import java.util.*;
 
 
@@ -60,15 +58,6 @@ public class DBpull {
 		}
 		catch( Exception e){ e.printStackTrace(); }
 	}
-
-	/**
-	 * @return An arraylist containing the student's timetable in order of 
-	 *         occurence      
-	 * Searches for the timetable of the student with the id id
-	 */
-	protected ArrayList<String> getStudentTimetable(){
-		return this.static_info.toArray("user_timetable");
-	}
 	
 	/**
 	 * @return a HashMap containing the student's first name, last name, number of times they have been late
@@ -99,14 +88,38 @@ public class DBpull {
 		return studentInfo;
 	}
 	
+	/**
+	 * @return - An arraylist of the list of classes that the student is currently taking. All four 
+	 * 		     in the order of their time
+	 */
 	protected ArrayList<String> getClasses(){
+		ArrayList<String> all = static_info.toArray("user_timetable");	//gets the students timetable
+		ArrayList<String> result = new ArrayList<String>();				//stores the result
+		int size = all.size();											//gets the size of the timetable
 		
-		return null;
+		//adds all classes to the array
+		//classes are even
+		for(int i = 0; i < size; i=i+2){
+			result.add( all.get(i) );
+		}
+		return result;
 	}
 	
+	/**
+	 * @return - An arraylist of the list of class locations of all the classes that the student is currently taking. All four 
+	 * 		     in the order of their time
+	 */
 	protected ArrayList<String> getClassLocation(){
+		ArrayList<String> all = static_info.toArray("user_timetable");	//gets the students timetable
+		ArrayList<String> result = new ArrayList<String>();				//stores the result
+		int size = all.size();											//gets the size of the timetable
 		
-		return null;
+		//adds all class locations to the array
+		//locations are odd
+		for(int i = 1; i < size; i=i+2){
+			result.add( all.get(i) );
+		}
+		return result;
 	}
 	
 	//Getter method for getting static info
@@ -123,7 +136,7 @@ public class DBpull {
 	protected JSONhandler getConfig_info() {
 		return config_info;
 	}
-	
+		
 	
    //this class is responsible for the threads
    private class MultiPull extends Thread{
@@ -152,18 +165,4 @@ public class DBpull {
 			return;
 		}
    }
-   
-   
-	public static void main(String args[]){
-		
-		String account = System.getenv("account");
-		String pass = System.getenv("password");
-    	CloudantClient client = new CloudantClient(account, account, pass);
-    	Database stat = client.database("static_user_info", false);
-    	Database dynamic = client.database("dynamic_user_info", false);
-    	Database con = client.database("config_info", false);
-    	DBpull student = new DBpull("DanTo", stat, dynamic, con);
- 
-    	System.out.println(student.getConfig_info().toString("school_end") );
-	}
 }

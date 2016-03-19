@@ -1,7 +1,5 @@
 package subClasses;
 
-import java.util.ArrayList;
-
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
 import subClasses.JSONhandler;
@@ -38,14 +36,6 @@ public class DBpush {
 	}
 	
 	/**
-	 * @param update - An arraylist containing a student's attendance record of being late, absent or present for a given class.
-	 * 				   The indexes of the array indicates the attendance for a specific class	
-	 */
-	public void updateDailyAttendance(ArrayList<String> update){
-		this.dynamic_info.addData("user_daily_attendance", update);    //Updates the daily attendance for the student
-	}
-	
-	/**
 	 * @param course - The class the student currently has
 	 * Updates the current student's current class 
 	 */
@@ -66,24 +56,6 @@ public class DBpush {
 	 */
 	public void updateStatus(String status){
 		this.dynamic_info.addData("user_status", status);
-	}
-	
-	/**
-	 * @param lates - the total number of times a student has been late 
-	 */
-	public void updateTotalLates(){
-		int late = Integer.parseInt(this.static_info.toString("user_number_of_lates"));
-		late++;
-		this.static_info.addData("user_number_of_lates", "" + late + "");
-	}
-	
-	/**
-	 * @param absents - the total number of times a student has been absent
-	 */
-	public void updateTotalAbsences(){
-		int absents = Integer.parseInt(this.static_info.toString("user_number_of_absences"));
-		absents++;
-		this.static_info.addData("user_number_of_absences", ""+absents+"");
 	}
 	
 	/**
@@ -141,12 +113,9 @@ public class DBpush {
     	Database classs = client.database("class_info", false);
     	
     	DBpull student = new DBpull("BruceWayne", stat, dynamic, classs);
-    	
-    	System.out.println(student.getStudentTimetable().get(0) );
-    	
+    	    	
     	DBpush stu = new DBpush(dynamic, stat, student.getDynamic_info(), student.getStatic_info() );
     	stu.updateLocation("hello");
-    	stu.updateTotalAbsences();
     	stu.updateStatus("present");
     	stu.commitChanges();
 	}	
