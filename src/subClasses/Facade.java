@@ -13,7 +13,7 @@ public class Facade {
 	private CloudantClient client;
 	private Database db_static;		
 	private Database db_dynamic;	
-	private Database db_class;
+	private Database db_config;
 	private DBpull student;
 	/**
 	 * @param id - Student id
@@ -27,26 +27,9 @@ public class Facade {
     	
     	this.db_static = client.database("static_user_info", false);
     	this.db_dynamic = client.database("dynamic_user_info", false);
-    	this.db_class = client.database("class_info", false);
+    	this.db_config = client.database("configurations", false);
     	
-    	this.student = new DBpull(id, this.db_static, this.db_dynamic, this.db_class);
-	}
-	
-	/**
-	 * @return - Student's first name
-	 */
-	public String getFirstName(){
-		Map<String, String> info = this.student.getStudentInfo();		
-		return info.get("user_first_name");
-	}
-	
-	/**
-	 * @return - Student's last name
-	 * 
-	 */
-	public String getLastName(){
-		Map<String, String> info = this.student.getStudentInfo();			
-		return info.get("user_last_name");
+    	this.student = new DBpull(id, this.db_static, this.db_dynamic, this.db_config);
 	}
 	
 	/**
@@ -57,15 +40,13 @@ public class Facade {
 	}
 	
 
-	public void updateStudentInstance( String classID, String course) {
+	public void updateStudentInstance( int hour, int min, String location) {
 		DBpush update = new DBpush(this.db_dynamic, this.db_static, this.student.getDynamic_info(), this.student.getStatic_info());
 	
 		ArrayList<String> timetable = this.student.getStudentTimetable();
 		
 		
-		Calendar time = Calendar.getInstance();
-		//int hour = time.get(Calendar.HOUR_OF_DAY);
-		int minute = time.get(Calendar.MINUTE);
+		int minute = 4;
 		
 		if( minute%20 > 5 && minute%20 <= 10 ){
 			//attend.add("present");
@@ -76,23 +57,20 @@ public class Facade {
 			update.updateStatus("late");
 			update.updateTotalLates();
 		}
-		update.updateLocation(classID);
-		update.updateCurrentClass(course);
+		update.updateLocation(location);
+		//update.updateCurrentClass(course);
 
 		update.commitChanges();
 	}
 	
 	private int period(){
 	
-		Calendar time = Calendar.getInstance();
-		int hour = time.get(Calendar.HOUR_OF_DAY);
-		int minute = time.get(Calendar.MINUTE);
 		
 		return 1;
 	}
 	
 	public static void main( String args[]){
 		Facade test = new Facade("BruceWayne");
-		test.updateStudentInstance("pse321", "bio");
+		//test.updateStudentInstance("pse321", "bio");
 	}
 }
