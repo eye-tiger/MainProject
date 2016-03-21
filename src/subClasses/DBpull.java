@@ -73,6 +73,10 @@ public class DBpull {
 		return studentInfo;
 	}
 	
+	protected ArrayList<String> getUserStatus(){
+		return this.dynamic_info.toArray("user_status");
+	}
+	
 	/**
 	 * @returns a HashMap containing the student's status, current location, current class
 	 * 			and their attendance record for the day

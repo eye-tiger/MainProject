@@ -33,18 +33,26 @@ public class Facade {
     	this.student = new DBpull(id, this.db_static, this.db_dynamic, this.db_config);
 	}
 
-	public void updateStudentInstance( int hour, int min, String location) {
+	/**
+	 * @param hour - the hour the tag was scanned
+	 * @param min  - the minute the tag was scanned
+	 * @param location - the location where the tag was scanned
+	 * @param indicator - whether the person is leaving or entering
+	 */
+	public void updateStudentInstance( int hour, int min, String location, String indicator) {
 		DBpush update = new DBpush(this.db_dynamic, this.db_static, this.student.getDynamic_info(), this.student.getStatic_info());
 	
 		ArrayList<String> timetableLoc = this.student.getClassLocation();	//gets all the students class locations
 		ArrayList<String> timetableCla = this.student.getClasses();			//gets all the students periods
+		ArrayList<String> userStatus = this.student.getUserStatus();
 		
 		update.updateLocation(location);		//updates their location to the db
 		int period = this.getPeriod(hour, min);	//gets period info based on time their tag was scanned
 		
 		if( period == 0){ //lunch time
 			update.updateCurrentClass("Lunch");	//update current class of student with what they have
-			update.updateStatus("-");		    //puts their status as dashed
+			this.update(userStatus, hour, min, indicator, "-");
+			update.updateStatus(userStatus);
 		}
 		else if( period == -1){ //not school hours
 		
@@ -54,10 +62,33 @@ public class Facade {
 			
 			//checks if the student belongs to that class
 			if( timetableLoc.get(period-1).equals(location) ){
-				update.updateStatus(this.status);
+				//if person is entering
+				this.update(userStatus, hour, min, indicator, this.status);
+				update.updateStatus(userStatus);
+			}
+			else{
+				this.update(userStatus, hour, min, indicator, "-");
+				update.updateStatus(userStatus);
 			}
 		}
 		update.commitChanges();
+	}
+	
+	private ArrayList<String> update(ArrayList<String> userStatus, int hour, int min, String indicator, String status){
+		//if person is entering
+		if( indicator.equals("entry")){		
+			userStatus.set(0, status);
+			String minu = (min < 10) ? "0" + min : min + "";
+			userStatus.set(1, hour + ":" + minu);
+		}
+		else{
+			//if person is leaving
+			userStatus.set(0, status);
+			String minu = (min < 10) ? "0" + min : min + "";
+			userStatus.set(2, hour + ":" + minu);
+		}
+		
+		return userStatus;
 	}
 	
 	/**
@@ -121,6 +152,6 @@ public class Facade {
 	
 	public static void main( String args[]){
 		Facade test = new Facade("80:ea:ca:00:42:27");
-		test.updateStudentInstance(1, 06, "SC301");
+		test.updateStudentInstance(1, 9, "SC301", "exit");
 	}
 }

@@ -1,7 +1,9 @@
 package subClasses;
 
-import com.cloudant.client.api.CloudantClient;
+import java.util.ArrayList;
+
 import com.cloudant.client.api.Database;
+
 import subClasses.JSONhandler;
 
 /**
@@ -54,7 +56,7 @@ public class DBpush {
 	/**
 	 * @param status - the status of the current student i.e whether they are late, absent or present
 	 */
-	public void updateStatus(String status){
+	public void updateStatus(ArrayList<String> status){
 		this.dynamic_info.addData("user_status", status);
 	}
 	
@@ -100,24 +102,5 @@ public class DBpush {
 			}
 			return;
 		}
-	}
-	
-	
-	
-	public static void main(String args[]){
-		String account = System.getenv("account");
-		String pass = System.getenv("password");
-    	CloudantClient client = new CloudantClient(account, account, pass);
-    	Database stat = client.database("static_user_info", false);
-    	Database dynamic = client.database("dynamic_user_info", false);
-    	Database classs = client.database("class_info", false);
-    	
-    	DBpull student = new DBpull("BruceWayne", stat, dynamic, classs);
-    	    	
-    	DBpush stu = new DBpush(dynamic, stat, student.getDynamic_info(), student.getStatic_info() );
-    	stu.updateLocation("hello");
-    	stu.updateStatus("present");
-    	stu.commitChanges();
 	}	
-	
 }
