@@ -17,6 +17,7 @@ public class Facade {
 	private Database db_config;
 	private DBpull student;
 	private String status;		//stores the student status i.e whether they are late, present or absent
+	private boolean check;
 	
 	/**
 	 * @param id - Student id
@@ -26,13 +27,24 @@ public class Facade {
 		String account = System.getenv("account");
 		String pass = System.getenv("password");
 		
-    	this.client = new CloudantClient(account, account, pass);
+    	this.client = new CloudantClient(account, account, pass);    	
     	this.db_static = client.database("static_user_info", false);
     	this.db_dynamic = client.database("dynamic_user_info", false);
     	this.db_config = client.database("config_info", false);
-    	this.student = new DBpull(id, this.db_static, this.db_dynamic, this.db_config);
+    	
+    	if( this.db_static.contains(id) ){
+        	this.student = new DBpull(id, this.db_static, this.db_dynamic, this.db_config);
+        	check = true;
+    	}
+    	else{
+    		check = false;
+    	}
 	}
 
+	public boolean check(){
+		return check;
+	}
+	
 	/**
 	 * @param hour - the hour the tag was scanned
 	 * @param min  - the minute the tag was scanned
