@@ -24,8 +24,8 @@ public class Facade {
 	 * Basically opens up the student's account on the database
 	 */
 	public Facade(String id){
-		String account = System.getenv("account");
-		String pass = System.getenv("password");
+		String account = "eyeofthetiger";//System.getenv("account");
+		String pass = "eng40000";//System.getenv("password");
 		
     	this.client = new CloudantClient(account, account, pass);    	
     	this.db_static = client.database("static_user_info", false);
@@ -41,12 +41,15 @@ public class Facade {
     	}
 	}
 
+	/**
+	 * @return - a boolean indicating whether the scanned id is in the database
+	 */
 	public boolean check(){
 		return check;
 	}
 	
 	/**
-	 * @param hour - the hour the tag was scanned
+	 * @param hour - the hour the tag was scanned in 12 hour format
 	 * @param min  - the minute the tag was scanned
 	 * @param location - the location where the tag was scanned
 	 * @param indicator - whether the person is leaving or entering
@@ -61,46 +64,48 @@ public class Facade {
 		update.updateLocation(location);		//updates their location to the db
 		int period = this.getPeriod(hour, min);	//gets period info based on time their tag was scanned
 		
-		if( period == 0){ //lunch time
+		//lunch time
+		if( period == 0){ 
 			update.updateCurrentClass("Lunch");	//update current class of student with what they have
-			this.update(userStatus, hour, min, indicator, "-");
+			userStatus = this.update(userStatus, hour, min, indicator, "-");
 			update.updateStatus(userStatus);
 		}
-		else if( period == -1){ //not school hours
-		
+		else if( period == -1){ 
+				//not during school hours
 		}
 		else{
 			update.updateCurrentClass(timetableCla.get(period-1));	//update current class of student with what they have
 			
 			//checks if the student belongs to that class
 			if( timetableLoc.get(period-1).equals(location) ){
-				//if person is entering
-				this.update(userStatus, hour, min, indicator, this.status);
-				update.updateStatus(userStatus);
+				userStatus = this.update(userStatus, hour, min, indicator, this.status); //updates students status
+				update.updateStatus(userStatus);										 //updates to db
 			}
 			else{
-				this.update(userStatus, hour, min, indicator, "-");
-				update.updateStatus(userStatus);
+				userStatus = this.update(userStatus, hour, min, indicator, "-");	//updates students status
+				update.updateStatus(userStatus);									//updates to db
 			}
 		}
 		update.commitChanges();
 	}
 	
 	private ArrayList<String> update(ArrayList<String> userStatus, int hour, int min, String indicator, String status){
+		ArrayList<String> userStat = userStatus;
+		
 		//if person is entering
 		if( indicator.equals("entry")){		
-			userStatus.set(0, status);
-			String minu = (min < 10) ? "0" + min : min + "";
-			userStatus.set(1, hour + ":" + minu);
+			userStat.set(0, status);							//set their present or late status
+			String minu = (min < 10) ? "0" + min : min + "";	//calculate their entry time
+			userStat.set(1, hour + ":" + minu);					//set their entry time
 		}
 		else{
 			//if person is leaving
-			userStatus.set(0, status);
-			String minu = (min < 10) ? "0" + min : min + "";
-			userStatus.set(2, hour + ":" + minu);
+			userStat.set(0, status);							//set the present or late status
+			String minu = (min < 10) ? "0" + min : min + "";	//calculate their exit time
+			userStat.set(2, hour + ":" + minu);					//set their exit time
 		}
 		
-		return userStatus;
+		return userStat;
 	}
 	
 	/**
@@ -164,6 +169,6 @@ public class Facade {
 	
 	public static void main( String args[]){
 		Facade test = new Facade("80:ea:ca:00:42:27");
-		test.updateStudentInstance(1, 9, "SC301", "exit");
+		test.updateStudentInstance(3, 40, "pie", "exit");
 	}
 }
