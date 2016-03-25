@@ -81,9 +81,13 @@ public class Facade {
 				userStatus = this.update(userStatus, hour, min, indicator, this.status); //updates students status
 				update.updateStatus(userStatus);										 //updates to db
 			}
-			else{
+			else if( timetableLoc.get(period-1).equals("-") ) {
 				userStatus = this.update(userStatus, hour, min, indicator, "-");	//updates students status
 				update.updateStatus(userStatus);									//updates to db
+			}
+			else{
+				userStatus = this.update(userStatus, hour, min, indicator, "ABSENT");	//updates students status
+				update.updateStatus(userStatus);
 			}
 		}
 		update.commitChanges();
@@ -116,7 +120,7 @@ public class Facade {
 	private int getPeriod(int hour, int minute){
 		
 		String time = hour + ":" + minute;				//converts scanned tag time to proper format
-		DateFormat sdf = new SimpleDateFormat("hh:mm");	//the format convert the string time to 
+		DateFormat sdf = new SimpleDateFormat("HH:mm");	//the format convert the string time to 
 		int period = 0;									//return value for the period
 		
 		Date date = new Date();	//the time the tag was scanned
@@ -138,6 +142,7 @@ public class Facade {
 			sEnd = sdf.parse( this.student.getConfig_info().toString("school_end") );
 		} catch (ParseException e) {}
 		
+		System.out.println(date.toString() );
 		
 		if( (date.compareTo(per1) == 1 && date.compareTo(per2) == -1 )   || date.compareTo(per1) == 0 ){	//first period
 			period = 1;	//between the period 1 and 2
@@ -169,6 +174,6 @@ public class Facade {
 	
 	public static void main( String args[]){
 		Facade test = new Facade("80:ea:ca:00:42:27");
-		test.updateStudentInstance(3, 40, "pie", "exit");
+		test.updateStudentInstance(15, 40, "pie", "exit");
 	}
 }
