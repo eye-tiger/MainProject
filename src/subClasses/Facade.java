@@ -96,6 +96,10 @@ public class Facade {
 	private ArrayList<String> update(ArrayList<String> userStatus, int hour, int min, String indicator, String status){
 		ArrayList<String> userStat = userStatus;
 		
+		///////////////
+		/////////////// ADD ENTRY AND EXIT TIME STUFF HERE
+		///////////////
+		
 		//if person is entering
 		if( indicator.equals("entry")){		
 			userStat.set(0, status);							//set their present or late status
