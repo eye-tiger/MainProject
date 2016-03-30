@@ -74,7 +74,11 @@ public class DBpull {
 	}
 	
 	protected ArrayList<String> getUserStatus(){
-		return this.dynamic_info.toArray("user_status");
+		ArrayList<String> hold = new ArrayList<String>();
+		hold.add(this.dynamic_info.toString("user_status"));
+		hold.add(this.dynamic_info.toString("entry"));
+		hold.add(this.dynamic_info.toString("exit"));
+		return hold;
 	}
 	
 	/**

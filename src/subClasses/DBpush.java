@@ -57,7 +57,10 @@ public class DBpush {
 	 * @param status - the status of the current student i.e whether they are late, absent or present
 	 */
 	public void updateStatus(ArrayList<String> status){
-		this.dynamic_info.addData("user_status", status);
+		this.dynamic_info.addData("user_status", status.get(0));
+		this.dynamic_info.addData("entry", status.get(1));
+		this.dynamic_info.addData("exit", status.get(2));
+
 	}
 	
 	/**

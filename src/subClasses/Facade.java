@@ -178,6 +178,6 @@ public class Facade {
 	
 	public static void main( String args[]){
 		Facade test = new Facade("80:ea:ca:00:42:27");
-		test.updateStudentInstance(15, 40, "pie", "exit");
+		test.updateStudentInstance(16, 24, "pie", "exit");
 	}
 }
