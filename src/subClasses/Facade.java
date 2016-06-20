@@ -24,8 +24,8 @@ public class Facade {
 	 * Basically opens up the student's account on the database
 	 */
 	public Facade(String id){
-		String account = "eyeofthetiger";//System.getenv("account");
-		String pass = "eng40000";//System.getenv("password");
+		String account = System.getenv("account");
+		String pass = System.getenv("password");
 		
     	this.client = new CloudantClient(account, account, pass);    	
     	this.db_static = client.database("static_user_info", false);
